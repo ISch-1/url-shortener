@@ -1,0 +1,17 @@
+bin/
+/dist/
+/coverage.out
+/coverage.html
+vendor/
+
+.idea/
+.vscode/
+*.iml
+
+.DS_Store
+Thumbs.db
+
+*.log
+.env
+.env.*
+!.env.example

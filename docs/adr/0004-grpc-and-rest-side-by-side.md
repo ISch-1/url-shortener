@@ -1,0 +1,36 @@
+# 0004 — gRPC internal + REST public, one service impl
+
+**Status:** Accepted
+**Date:** 2026-07-13
+
+## Context
+
+External callers want REST + JSON (browsers, curl, third-party integrations, any tool that speaks HTTP). Internal callers benefit from gRPC + protobuf (typed, cheap, streaming-ready, backpressure via HTTP/2 flow control).
+
+## Decision
+
+Both surfaces run in the same binary, both talk to the **same `service.Shortener` type**. The transports are dumb translation layers:
+
+- `internal/http/handlers.go` — decodes JSON, calls `Shortener`, encodes JSON.
+- `internal/grpc/server.go` — implements the tonic-generated service interface, translates protobuf ↔ domain, calls `Shortener`.
+
+No business logic lives in either transport. The service is where correctness happens, where tests are written, where metrics are recorded. This means a bug fixed once is fixed for both surfaces.
+
+Ports: `:8080` HTTP, `:50051` gRPC, `:9100` HTTP for `/metrics` and `/health`.
+
+## Consequences
+
+**Positive**
+- Adding a third transport (e.g. websockets for streaming, or Connect for browser gRPC) is a copy-paste of one file, not a rewrite.
+- The service can be unit-tested with an in-memory store and no transport at all.
+- Auditability: any behaviour change is one commit that touches the service.
+
+**Negative**
+- Two servers means two shutdown-signal handlers, two health checks, two ports to expose. All boilerplate but non-zero.
+- Protobuf and JSON message names drift if left unmanaged. We keep them aligned in the same source-of-truth (proto file → generated Go structs mirrored by REST DTOs written by hand).
+
+## Alternatives considered
+
+1. **REST only.** Fine for V1, but gRPC is the interview-expected transport for anything internal at Google/Amazon/Meta. Cost of adding it now is a few files.
+2. **grpc-gateway** — auto-generate REST from proto annotations. Rejected because the JSON shapes we want (`X-Api-Key` header, custom error body) diverge from what auto-generation produces. Manual REST handlers are ~200 lines and cleaner.
+3. **Connect (bufbuild)** — nice, browser-friendly. Considered for a future v2; not on the critical path.

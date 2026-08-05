@@ -1,0 +1,104 @@
+{
+  "uid": "shortener-overview",
+  "title": "URL Shortener — Overview",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "timezone": "browser",
+  "time": { "from": "now-15m", "to": "now" },
+  "refresh": "10s",
+  "tags": ["url-shortener"],
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "HTTP request rate by route",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum by (route) (rate(http_requests_total{service=\"url-shortener\"}[1m]))",
+          "legendFormat": "{{route}}"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Latency p50 / p95 / p99 — /:{code}",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(http_request_duration_seconds_bucket{service=\"url-shortener\", route=\"/:code\"}[1m])))",
+          "legendFormat": "p50"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{service=\"url-shortener\", route=\"/:code\"}[1m])))",
+          "legendFormat": "p95"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{service=\"url-shortener\", route=\"/:code\"}[1m])))",
+          "legendFormat": "p99"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Cache hit ratio (5m)",
+      "gridPos": { "x": 0, "y": 8, "w": 8, "h": 6 },
+      "targets": [
+        {
+          "expr": "sum(rate(cache_hits_total[5m])) / clamp_min(sum(rate(cache_hits_total[5m]) + rate(cache_misses_total[5m])), 1)"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percentunit", "min": 0, "max": 1 } }
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Rate limit — allowed vs rejected",
+      "gridPos": { "x": 8, "y": 8, "w": 16, "h": 6 },
+      "targets": [
+        {
+          "expr": "sum(rate(ratelimit_allowed_total[1m]))",
+          "legendFormat": "allowed"
+        },
+        {
+          "expr": "sum by (reason) (rate(ratelimit_rejected_total[1m]))",
+          "legendFormat": "rejected — {{reason}}"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Singleflight coalesce ratio (5m)",
+      "gridPos": { "x": 0, "y": 14, "w": 8, "h": 6 },
+      "targets": [
+        {
+          "expr": "sum(rate(singleflight_shared_total[5m])) / clamp_min(sum(rate(singleflight_calls_total[5m])), 1)"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percentunit", "min": 0, "max": 1 } }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Go heap in use",
+      "gridPos": { "x": 8, "y": 14, "w": 8, "h": 6 },
+      "targets": [
+        { "expr": "go_memstats_heap_inuse_bytes{service=\"url-shortener\"}" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "bytes" } }
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "Postgres pool — in-use",
+      "gridPos": { "x": 16, "y": 14, "w": 8, "h": 6 },
+      "targets": [
+        { "expr": "pgxpool_acquired_conns{service=\"url-shortener\"}" }
+      ]
+    }
+  ]
+}

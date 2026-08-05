@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package shortener.v1;
+
+option go_package = "github.com/ISch-1/url-shortener/pkg/api/v1;shortenerv1";
+
+import "google/protobuf/timestamp.proto";
+
+// Internal API. The REST layer exposes the same surface on HTTP.
+service ShortenerService {
+    rpc CreateLink   (CreateLinkRequest)   returns (CreateLinkResponse);
+    rpc GetLink      (GetLinkRequest)      returns (Link);
+    rpc ResolveCode  (ResolveCodeRequest)  returns (ResolveCodeResponse);
+    rpc DeactivateLink (DeactivateLinkRequest) returns (DeactivateLinkResponse);
+}
+
+message CreateLinkRequest {
+    string original_url = 1;
+    google.protobuf.Timestamp expires_at = 2;   // optional; server rejects past dates
+    string api_key = 3;                          // optional; used for rate-limit + attribution
+}
+
+message CreateLinkResponse {
+    Link link = 1;
+}
+
+message GetLinkRequest {
+    string code = 1;
+}
+
+message ResolveCodeRequest {
+    string code = 1;
+}
+
+message ResolveCodeResponse {
+    string original_url = 1;
+    bool found = 2;
+}
+
+message DeactivateLinkRequest {
+    string code = 1;
+}
+
+message DeactivateLinkResponse {
+    bool removed = 1;
+}
+
+message Link {
+    string code         = 1;
+    string original_url = 2;
+    int64  snowflake_id = 3;
+    google.protobuf.Timestamp created_at = 4;
+    google.protobuf.Timestamp expires_at = 5;
+    bool   active       = 6;
+    int64  click_count  = 7;
+}
