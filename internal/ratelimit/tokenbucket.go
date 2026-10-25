@@ -27,8 +27,8 @@ type Decision struct {
 // Limits describes a bucket's shape. Zero refill or capacity means "no limiting"
 // (Allow always returns Allowed=true).
 type Limits struct {
-	Capacity          int     // max burst
-	RefillPerSecond   float64 // steady-state throughput
+	Capacity        int     // max burst
+	RefillPerSecond float64 // steady-state throughput
 }
 
 type TokenBucket struct {

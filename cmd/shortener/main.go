@@ -5,8 +5,8 @@ package main
 import (
 	"context"
 	"errors"
-	stdhttp "net/http"
 	"net"
+	stdhttp "net/http"
 	"os"
 	"os/signal"
 	"syscall"

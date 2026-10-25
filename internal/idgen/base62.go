@@ -2,6 +2,7 @@ package idgen
 
 import (
 	"errors"
+	"math"
 	"strings"
 )
 
@@ -55,11 +56,14 @@ func DecodeBase62(s string) (int64, error) {
 		if c >= 128 || base62Index[c] < 0 {
 			return 0, errors.New("invalid base62 character")
 		}
-		// Overflow check: n*62 must not overflow int64.
-		if n > (1<<62)/62 {
+		d := int64(base62Index[c])
+		// Overflow check: n*62 + d must fit in an int64, i.e.
+		// n <= (MaxInt64 - d) / 62. Bounding by 1<<62 instead would reject
+		// half of the valid range (every value above 2^62).
+		if n > (math.MaxInt64-d)/62 {
 			return 0, errors.New("base62 overflow")
 		}
-		n = n*62 + int64(base62Index[c])
+		n = n*62 + d
 	}
 	return n, nil
 }

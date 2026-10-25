@@ -18,7 +18,7 @@ type Metrics struct {
 
 	// Singleflight
 	SingleflightCalls  prometheus.Counter
-	SingleflightShared prometheus.Counter
+	SingleflightShares prometheus.Counter
 
 	// Domain
 	LinksCreated     prometheus.Counter
@@ -46,7 +46,7 @@ func NewMetrics(reg prometheus.Registerer) *Metrics {
 		CacheHits:          factory.NewCounter(prometheus.CounterOpts{Name: "cache_hits_total"}),
 		CacheMisses:        factory.NewCounter(prometheus.CounterOpts{Name: "cache_misses_total"}),
 		SingleflightCalls:  factory.NewCounter(prometheus.CounterOpts{Name: "singleflight_calls_total"}),
-		SingleflightShared: factory.NewCounter(prometheus.CounterOpts{Name: "singleflight_shared_total"}),
+		SingleflightShares: factory.NewCounter(prometheus.CounterOpts{Name: "singleflight_shared_total"}),
 		LinksCreated:       factory.NewCounter(prometheus.CounterOpts{Name: "links_created_total"}),
 		LinksDeactivated:   factory.NewCounter(prometheus.CounterOpts{Name: "links_deactivated_total"}),
 		RateLimitAllowed:   factory.NewCounter(prometheus.CounterOpts{Name: "ratelimit_allowed_total"}),
@@ -62,7 +62,7 @@ func (m *Metrics) CacheHit()         { m.CacheHits.Inc() }
 func (m *Metrics) CacheMiss()        { m.CacheMisses.Inc() }
 func (m *Metrics) SingleflightCall() { m.SingleflightCalls.Inc() }
 func (m *Metrics) SingleflightShared() {
-	m.SingleflightShared.Inc()
+	m.SingleflightShares.Inc()
 }
 func (m *Metrics) LinkCreated()     { m.LinksCreated.Inc() }
 func (m *Metrics) LinkDeactivated() { m.LinksDeactivated.Inc() }

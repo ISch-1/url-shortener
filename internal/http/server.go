@@ -34,8 +34,8 @@ func NewMux(d MuxDeps) http.Handler {
 	mux := http.NewServeMux()
 
 	// Public API — rate-limited.
-	mux.Handle("POST /api/v1/links",         obs(rl(http.HandlerFunc(d.Handlers.Create))))
-	mux.Handle("GET /api/v1/links/{code}",   obs(rl(http.HandlerFunc(d.Handlers.Get))))
+	mux.Handle("POST /api/v1/links", obs(rl(http.HandlerFunc(d.Handlers.Create))))
+	mux.Handle("GET /api/v1/links/{code}", obs(rl(http.HandlerFunc(d.Handlers.Get))))
 	mux.Handle("DELETE /api/v1/links/{code}", obs(rl(http.HandlerFunc(d.Handlers.Delete))))
 
 	// Redirect — hot path, no rate limit middleware, still observed.

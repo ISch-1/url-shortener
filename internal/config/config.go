@@ -19,19 +19,19 @@ type Config struct {
 	WorkerID int64 `envconfig:"WORKER_ID" default:"1"`
 
 	// Postgres
-	PostgresURL     string        `envconfig:"POSTGRES_URL"      default:"postgres://shortener:shortener@localhost:5432/shortener?sslmode=disable"`
-	PostgresMaxConns int32        `envconfig:"POSTGRES_MAX_CONNS" default:"20"`
+	PostgresURL            string        `envconfig:"POSTGRES_URL"      default:"postgres://shortener:shortener@localhost:5432/shortener?sslmode=disable"`
+	PostgresMaxConns       int32         `envconfig:"POSTGRES_MAX_CONNS" default:"20"`
 	PostgresConnectTimeout time.Duration `envconfig:"POSTGRES_CONNECT_TIMEOUT" default:"3s"`
 
 	// Redis
-	RedisAddr     string        `envconfig:"REDIS_ADDR"      default:"localhost:6379"`
-	RedisPoolSize int           `envconfig:"REDIS_POOL_SIZE" default:"64"`
+	RedisAddr     string `envconfig:"REDIS_ADDR"      default:"localhost:6379"`
+	RedisPoolSize int    `envconfig:"REDIS_POOL_SIZE" default:"64"`
 
 	// Cache
 	CacheTTL time.Duration `envconfig:"CACHE_TTL" default:"1h"`
 
 	// Rate limiter defaults (per-subject: API key, IP)
-	RateLimitCapacity int     `envconfig:"RATE_LIMIT_CAPACITY" default:"120"`
+	RateLimitCapacity        int     `envconfig:"RATE_LIMIT_CAPACITY" default:"120"`
 	RateLimitRefillPerSecond float64 `envconfig:"RATE_LIMIT_REFILL_PER_SECOND" default:"2.0"`
 
 	// Public base URL for building short links (e.g. https://sho.rt)

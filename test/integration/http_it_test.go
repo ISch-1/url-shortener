@@ -18,9 +18,9 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	tcredis "github.com/testcontainers/testcontainers-go/modules/redis"
-	tcpg "github.com/testcontainers/testcontainers-go/modules/postgres"
 	tc "github.com/testcontainers/testcontainers-go"
+	tcpg "github.com/testcontainers/testcontainers-go/modules/postgres"
+	tcredis "github.com/testcontainers/testcontainers-go/modules/redis"
 
 	"github.com/ISch-1/url-shortener/internal/cache"
 	apphttp "github.com/ISch-1/url-shortener/internal/http"
@@ -54,15 +54,14 @@ func startHarness(t *testing.T) *harness {
 			tcpg.WithUsername("shortener"),
 			tcpg.WithPassword("shortener"),
 			tcpg.WithDatabase("shortener"),
+			// The image restarts Postgres once after initdb; without this, the
+			// first connection can land mid-restart and fail with an EOF.
+			tcpg.BasicWaitStrategies(),
 			tc.WithLogger(tc.TestLogger(t)),
 		)
 		if err != nil {
 			sharedErr = err
 			return
-		}
-		if err := pg.Snapshot(ctx); err != nil {
-			// Snapshot support is optional; ignore.
-			_ = err
 		}
 		pgDSN, err := pg.ConnectionString(ctx, "sslmode=disable")
 		if err != nil {

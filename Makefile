@@ -43,10 +43,14 @@ it:
 run:
 	go run ./cmd/shortener
 
+# The generated code is committed, so `go build` and the Dockerfile need no
+# protoc. Regenerate after editing the .proto, with the plugin versions that
+# match go.mod: protoc-gen-go v1.34.2, protoc-gen-go-grpc v1.5.1.
+# module=... places the files at the go_package path (pkg/api/v1).
 proto:
 	protoc \
-	  --go_out=pkg/api/v1 --go_opt=paths=source_relative \
-	  --go-grpc_out=pkg/api/v1 --go-grpc_opt=paths=source_relative \
+	  --go_out=. --go_opt=module=github.com/ISch-1/url-shortener \
+	  --go-grpc_out=. --go-grpc_opt=module=github.com/ISch-1/url-shortener \
 	  -I api/proto \
 	  api/proto/shortener/v1/shortener.proto
 

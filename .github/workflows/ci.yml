@@ -10,8 +10,8 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  CGO_ENABLED: 0
+# No global CGO_ENABLED=0: the race detector (-race) needs cgo. The Dockerfile
+# builds the static release binary with CGO_ENABLED=0 on its own.
 
 jobs:
   lint-and-unit:
@@ -31,9 +31,10 @@ jobs:
       - name: go vet
         run: go vet ./...
 
+      # Pinned: staticcheck@latest needs a newer Go than this module's 1.23.
       - name: staticcheck
         run: |
-          go install honnef.co/go/tools/cmd/staticcheck@latest
+          go install honnef.co/go/tools/cmd/staticcheck@2024.1.1
           staticcheck ./...
 
       - name: Unit tests
@@ -70,8 +71,11 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      # Image references must be lowercase; the owner (ISch-1) is not.
+      - name: Image name
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/url-shortener" >> "$GITHUB_ENV"
       - name: Build + push
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/url-shortener:${{ github.sha }}
+          tags: ${{ env.IMAGE }}:${{ github.sha }}

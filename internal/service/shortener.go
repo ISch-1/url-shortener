@@ -31,12 +31,12 @@ type Metrics interface {
 
 type noopMetrics struct{}
 
-func (noopMetrics) CacheHit()         {}
-func (noopMetrics) CacheMiss()        {}
-func (noopMetrics) SingleflightCall() {}
+func (noopMetrics) CacheHit()           {}
+func (noopMetrics) CacheMiss()          {}
+func (noopMetrics) SingleflightCall()   {}
 func (noopMetrics) SingleflightShared() {}
-func (noopMetrics) LinkCreated()      {}
-func (noopMetrics) LinkDeactivated()  {}
+func (noopMetrics) LinkCreated()        {}
+func (noopMetrics) LinkDeactivated()    {}
 
 // Shortener is the application service.
 type Shortener struct {

@@ -1,9 +1,9 @@
 // Package grpc adapts the ShortenerService protobuf surface onto the same
 // service.Shortener the HTTP layer uses.
 //
-// The generated .pb.go files are NOT checked in — run `make proto` (which
-// invokes protoc via api/proto/shortener/v1/shortener.proto) to produce them.
-// The typed stubs land in pkg/api/v1 and this file compiles against those.
+// The typed stubs are generated from api/proto/shortener/v1/shortener.proto
+// into pkg/api/v1 and committed, so a plain `go build` works; run `make proto`
+// to regenerate them after changing the .proto.
 package grpc
 
 import (

@@ -33,16 +33,7 @@ Same surface via `shortener.v1.ShortenerService` — `CreateLink`, `GetLink`, `R
 
 Prerequisites: Go 1.23+, Docker (Compose v2), `curl`, `jq`. For gRPC calls: `grpcurl`. For load tests: `k6`.
 
-One-time on a fresh clone:
-
-```bash
-# Regenerate the .pb.go stubs from the proto file (requires protoc + Go plugins).
-# The generated files land in pkg/api/v1 — the .gitignore lets you commit them
-# if you'd rather not require protoc on every clone.
-make proto
-```
-
-Then:
+The gRPC stubs in `pkg/api/v1` are generated from the `.proto` and committed, so building needs no `protoc`. After editing the `.proto`, regenerate them with `make proto` (protoc plus the plugin versions noted in the Makefile).
 
 ```bash
 make up            # Postgres, Redis, Prometheus, Grafana, Jaeger, OTel Collector
@@ -125,7 +116,7 @@ url-shortener/
 │
 ├── api/proto/shortener/v1/  # protobuf source of truth
 │   └── shortener.proto
-├── pkg/api/v1/              # generated .pb.go (run `make proto`)
+├── pkg/api/v1/              # generated .pb.go, committed (regenerate: `make proto`)
 │
 ├── cmd/shortener/main.go    # binary entry — wires everything + graceful shutdown
 │

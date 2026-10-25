@@ -22,11 +22,11 @@ const (
 	workerBits = 10
 	seqBits    = 12
 
-	maxWorker = (1 << workerBits) - 1     // 1023
-	maxSeq    = (1 << seqBits) - 1        // 4095
+	maxWorker = (1 << workerBits) - 1 // 1023
+	maxSeq    = (1 << seqBits) - 1    // 4095
 
-	timeShift   = workerBits + seqBits    // 22
-	workerShift = seqBits                 // 12
+	timeShift   = workerBits + seqBits // 22
+	workerShift = seqBits              // 12
 )
 
 // ErrClockRegressed is returned when the wall clock jumps backwards by more

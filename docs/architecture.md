@@ -22,7 +22,7 @@ graph LR
 graph TB
     subgraph transport
         http[HTTP handlers<br/>net/http + Go 1.22 ServeMux]
-        grpc[gRPC server<br/>tonic-generated stubs]
+        grpc[gRPC server<br/>protoc-gen-go-grpc stubs]
     end
 
     subgraph middleware

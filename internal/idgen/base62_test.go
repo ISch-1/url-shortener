@@ -1,6 +1,7 @@
 package idgen
 
 import (
+	"math"
 	"math/rand"
 	"testing"
 
@@ -17,6 +18,8 @@ func TestBase62_RoundTrip_KnownValues(t *testing.T) {
 		{61, "z"},
 		{62, "10"},
 		{123456789, "8M0kX"},
+		{1 << 62, "5UfZOVH2ZO4"},
+		{math.MaxInt64, "AzL8n0Y58m7"},
 	}
 	for _, c := range cases {
 		got := EncodeBase62(c.n)
@@ -44,5 +47,13 @@ func TestBase62_DecodeRejectsInvalid(t *testing.T) {
 	_, err = DecodeBase62("hello world") // contains space
 	assert.Error(t, err)
 	_, err = DecodeBase62("ábc") // non-ASCII
+	assert.Error(t, err)
+}
+
+func TestBase62_DecodeRejectsOverflow(t *testing.T) {
+	// MaxInt64 + 1: the final digit alone pushes it past the limit.
+	_, err := DecodeBase62("AzL8n0Y58m8")
+	assert.Error(t, err)
+	_, err = DecodeBase62("zzzzzzzzzzzz")
 	assert.Error(t, err)
 }
